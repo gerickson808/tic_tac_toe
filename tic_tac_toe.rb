@@ -27,15 +27,18 @@ private
 
 	def turn
 		tie_game if @turn == 10
-		player = @turn%2 == 1 ? @player1 : @player2
-		display_name = player == @player1 ? "Player 1" : "Player 2"
+		@player = @turn%2 == 1 ? @player1 : @player2
+		display_name = @player == @player1 ? "Player 1" : "Player 2"
 		puts "#{display_name}: Choose your space. Enter 'help' for options."
-		choice = gets.chomp
+		choice
+	end
 
+	def choice
+		choice = gets.chomp
 		if @@acceptable_moves.include? choice
-			move(choice, player)
-			display_board(@spaces)
-			check_if_win(@spaces, player)
+			move(choice)
+			display_board
+			check_if_win
 		elsif choice == "help"
 			help
 		else
@@ -44,22 +47,22 @@ private
 		end
 	end
 
-	def move(choice, player)
+	def move(choice)
 		space = @@acceptable_moves.index(choice)
 		i = space / 3
 		j = space%3
 		unless @spaces[i][j] == " "
 			turn
 		end
-		@spaces[i][j] = player.sign
+		@spaces[i][j] = @player.sign
 
 
 
 
 	end
 
-	def display_board(spaces)
-		q = spaces
+	def display_board
+		q = @spaces
 		puts " #{q[0][0]} | #{q[0][1]} |  #{q[0][2]} "
 		puts "-----------"
 		puts " #{q[1][0]} | #{q[1][1]} |  #{q[1][2]} "
@@ -68,29 +71,29 @@ private
 
 	end
 
-	def check_if_win(spaces, player)
+	def check_if_win
 		0.upto(2) do |i| 
-			win(player) if @spaces[i].all? {|sign| sign == player.sign}
+			win if @spaces[i].all? {|sign| sign == @player.sign}
 			counter = 0
 			0.upto(2) do |j| #for this section, i and j are used opposite of normal
-				counter += 1 if @spaces[j][i] == player.sign
+				counter += 1 if @spaces[j][i] == @player.sign
 			end
-			win(player) if counter == 3
+			win if counter == 3
 		end
 
 		if @spaces[0][0] == @spaces[1][1] && @spaces[0][0] == @spaces[2][2]
-			win(player) unless @spaces[0][0] == " "
+			win unless @spaces[0][0] == " "
 		end
 
 		if @spaces[0][2] == @spaces[1][1] && @spaces[0][2] == @spaces[2][0]
-			win(player) unless @spaces[0][2] == " "
+			win unless @spaces[0][2] == " "
 		end
 
 		next_turn
 	end
 
-	def win(player)
-		display_name = player == @player1 ? "Player 1" : "Player 2"
+	def win
+		display_name = @player == @player1 ? "Player 1" : "Player 2"
 		puts "#{display_name} wins!"
 		new_game?
 	end
